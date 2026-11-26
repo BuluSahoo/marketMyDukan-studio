@@ -42,6 +42,7 @@ export function TemplateGrid({ templates, onSelectTemplate }: Props) {
               categoryName={categoryName}
               priority={i < 3}
               ctaLabel="View Details"
+              showPreviewStatus
               onAction={() => onSelectTemplate(template)}
             />
           </li>

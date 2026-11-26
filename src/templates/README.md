@@ -11,6 +11,7 @@ src/templates/<category-slug>/<template-slug>/
 
 Rules:
 - Never import from `src/components`, `src/app`, or `src/styles` of the agency site.
-- Register new templates in `registry.ts`; categories live in `categories.ts`.
+- Never augment `styled-components`'s global `DefaultTheme` inside a template (import the template's own theme tokens directly so templates stay type-safe and isolated).
+- Register new templates in `registry.ts` and `preview-map.tsx`; categories live in `categories.ts`.
 - Template assets go in `public/templates/<template-slug>/`.
 

@@ -293,8 +293,15 @@ export function TemplateQuickViewModal({ template, onClose }: Props) {
                 <span>Starting price (customised for you)</span>
                 <strong>{formatPrice(template.startingPrice)}</strong>
               </PriceRow>
-              <ButtonLink href="/#contact" block onClick={onClose}>
-                Get This Website <ArrowRight size={18} aria-hidden />
+              <ButtonLink
+                href={template.previewAvailable && template.previewPath ? template.previewPath : "/#contact"}
+                block
+                onClick={onClose}
+              >
+                {template.previewAvailable && template.previewPath
+                  ? "Launch Live Preview"
+                  : "Request This Design"}{" "}
+                <ArrowRight size={18} aria-hidden />
               </ButtonLink>
             </Bottom>
           </InfoPane>

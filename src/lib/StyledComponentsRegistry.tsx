@@ -3,13 +3,11 @@
 import { useState, type ReactNode } from "react";
 import { useServerInsertedHTML } from "next/navigation";
 import { MotionConfig } from "framer-motion";
-import { ServerStyleSheet, StyleSheetManager, ThemeProvider } from "styled-components";
-import { theme } from "@/styles/theme";
-import { GlobalStyle } from "@/styles/GlobalStyle";
+import { ServerStyleSheet, StyleSheetManager } from "styled-components";
 
 /**
- * Collects styled-components styles during SSR and injects them into the
- * streamed HTML, preventing flash of unstyled content. Also provides theme.
+ * Collects styled-components styles during SSR for both the agency site and
+ * independent template previews without coupling them to a shared theme or CSS reset.
  */
 export function StyledComponentsRegistry({ children }: { children: ReactNode }) {
   const [sheet] = useState(() => new ServerStyleSheet());
@@ -20,17 +18,9 @@ export function StyledComponentsRegistry({ children }: { children: ReactNode }) 
     return <>{styles}</>;
   });
 
-  const content = (
-    <ThemeProvider theme={theme}>
-      <MotionConfig reducedMotion="user">
-        <GlobalStyle />
-        {children}
-      </MotionConfig>
-    </ThemeProvider>
-  );
+  const content = <MotionConfig reducedMotion="user">{children}</MotionConfig>;
 
   if (typeof window !== "undefined") return content;
 
   return <StyleSheetManager sheet={sheet.instance}>{content}</StyleSheetManager>;
 }
-

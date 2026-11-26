@@ -63,4 +63,8 @@ export interface CatalogTemplate {
   featured: boolean;
   keywords: readonly string[];
   highlights: readonly string[];
+  /** True only when a real independent template exists in src/templates/registry.ts */
+  previewAvailable: boolean;
+  /** Route to live preview (e.g. /preview/oakline-interiors) when registered */
+  previewPath?: string;
 }

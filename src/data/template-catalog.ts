@@ -1,6 +1,6 @@
 import type { CatalogTemplate, TemplateSortOption, WebsiteType } from "@/types/template";
 import { getCategoryBySlug } from "@/templates/categories";
-import { getRegisteredTemplateBySlug } from "@/templates/registry";
+import { getRegisteredTemplateBySlug, isTemplateRegistered } from "@/templates/registry";
 
 const item = (
   slug: string,
@@ -12,20 +12,25 @@ const item = (
   tagline: string,
   keywords: readonly string[],
   highlights: readonly string[],
-): CatalogTemplate => ({
-  slug,
-  name,
-  categorySlug,
-  websiteType,
-  tagline,
-  startingPrice,
-  featured,
-  image: `/previews/${slug}.svg`,
-  mobileImage: `/previews/${slug}-mobile.svg`,
-  imageAlt: `${name} — ${tagline}`,
-  keywords,
-  highlights,
-});
+): CatalogTemplate => {
+  const registered = getRegisteredTemplateBySlug(slug);
+  return {
+    slug,
+    name,
+    categorySlug,
+    websiteType,
+    tagline,
+    startingPrice,
+    featured,
+    image: `/previews/${slug}.svg`,
+    mobileImage: `/previews/${slug}-mobile.svg`,
+    imageAlt: `${name} — ${tagline}`,
+    keywords,
+    highlights,
+    previewAvailable: isTemplateRegistered(slug),
+    previewPath: registered?.demoPath,
+  };
+};
 
 /**
  * Centralized template catalogue metadata.
@@ -48,12 +53,12 @@ export const catalogTemplates: readonly CatalogTemplate[] = [
     "timber-and-loom",
     "Timber & Loom",
     "furniture",
-    "Landing Page",
-    8999,
+    "E-commerce",
+    14499,
     false,
-    "Bespoke wooden furniture & carpentry studio landing experience",
-    ["carpentry", "bespoke", "wood", "custom furniture", "studio"],
-    ["Custom order inquiry flow", "Craftsmanship story section", "Showroom visit booking"],
+    "Dark luxury furniture atelier pairing smoked timber, handloom upholstery and bronze",
+    ["carpentry", "bespoke", "wood", "custom furniture", "dark luxury", "teak"],
+    ["Dark editorial storefront", "Finish & textile selector", "Cart drawer & WhatsApp enquiry"],
   ),
   item(
     "maison-vela",

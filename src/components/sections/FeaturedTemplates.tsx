@@ -10,6 +10,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { TemplateCard } from "@/components/ui/TemplateCard";
 import { ButtonLink } from "@/components/ui/Button";
 import { categories } from "@/templates/categories";
+import { isTemplateRegistered } from "@/templates/registry";
 import { getFeaturedTemplates } from "@/data/showcase-templates";
 
 const Grid = styled.ul`
@@ -40,17 +41,24 @@ export function FeaturedTemplates() {
           description="Thoughtfully crafted starting points — each one fully customised to your brand before launch."
         />
         <Grid>
-          {getFeaturedTemplates().map((template, i) => (
-            <li key={template.slug}>
-              <Reveal delay={(i % 3) * 0.06}>
-                <TemplateCard
-                  template={template}
-                  categoryName={categoryName(template.categorySlug)}
-                  ctaHref={`/templates/${template.categorySlug}`}
-                />
-              </Reveal>
-            </li>
-          ))}
+          {getFeaturedTemplates().map((template, i) => {
+            const registered = isTemplateRegistered(template.slug);
+            return (
+              <li key={template.slug}>
+                <Reveal delay={(i % 3) * 0.06}>
+                  <TemplateCard
+                    template={{
+                      ...template,
+                      previewAvailable: registered,
+                      previewPath: registered ? `/preview/${template.slug}` : undefined,
+                    }}
+                    categoryName={categoryName(template.categorySlug)}
+                    ctaHref={`/templates/${template.categorySlug}`}
+                  />
+                </Reveal>
+              </li>
+            );
+          })}
         </Grid>
         <FooterRow>
           <ButtonLink href="/templates" variant="secondary">

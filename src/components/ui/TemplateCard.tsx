@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowUpRight, Eye } from "lucide-react";
 import styled from "styled-components";
 import { Button, ButtonLink } from "./Button";
@@ -15,6 +16,8 @@ export interface TemplateCardItem {
   image: string;
   imageAlt: string;
   tagline?: string;
+  previewAvailable?: boolean;
+  previewPath?: string;
 }
 
 const Card = styled.article`
@@ -50,6 +53,38 @@ const Media = styled.div`
     transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   ${Card}:hover & img { transform: scale(1.03); }
+`;
+
+const MediaLink = styled(Link)`
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+`;
+
+const StatusBadge = styled.span<{ $live: boolean }>`
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: ${({ theme }) => theme.radii.pill};
+  background: ${({ $live, theme }) => ($live ? theme.colors.text : "rgba(255, 255, 255, 0.92)")};
+  color: ${({ $live, theme }) => ($live ? theme.colors.card : theme.colors.muted)};
+  border: 1px solid ${({ $live, theme }) => ($live ? theme.colors.text : theme.colors.border)};
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: ${({ $live }) => ($live ? "#22C55E" : "#B0ABA0")};
+  }
 `;
 
 const Body = styled.div`
@@ -131,6 +166,7 @@ interface Props {
   ctaLabel?: string;
   ctaHref?: string;
   onAction?: () => void;
+  showPreviewStatus?: boolean;
 }
 
 export function TemplateCard({
@@ -140,17 +176,35 @@ export function TemplateCard({
   ctaLabel = "Preview",
   ctaHref = "/#contact",
   onAction,
+  showPreviewStatus = false,
 }: Props) {
+  const hasLivePreview = Boolean(template.previewAvailable && template.previewPath);
+
+  const mediaImage = (
+    <Image
+      src={template.image}
+      alt={template.imageAlt}
+      fill
+      priority={priority}
+      sizes="(min-width: 1024px) 380px, (min-width: 768px) 46vw, 92vw"
+    />
+  );
+
   return (
     <Card>
       <Media>
-        <Image
-          src={template.image}
-          alt={template.imageAlt}
-          fill
-          priority={priority}
-          sizes="(min-width: 1024px) 380px, (min-width: 768px) 46vw, 92vw"
-        />
+        {hasLivePreview && template.previewPath ? (
+          <MediaLink href={template.previewPath} aria-label={`Open live preview of ${template.name}`}>
+            {mediaImage}
+          </MediaLink>
+        ) : (
+          mediaImage
+        )}
+        {showPreviewStatus && (
+          <StatusBadge $live={hasLivePreview}>
+            {hasLivePreview ? "Live Preview" : "Design Concept"}
+          </StatusBadge>
+        )}
       </Media>
       <Body>
         <div>
@@ -166,7 +220,15 @@ export function TemplateCard({
             <small>Starting at</small>
             <strong>{formatPrice(template.startingPrice)}</strong>
           </Price>
-          {onAction ? (
+          {hasLivePreview && template.previewPath ? (
+            <ButtonLink
+              href={template.previewPath}
+              variant="primary"
+              ariaLabel={`Live preview ${template.name}`}
+            >
+              <Eye size={16} aria-hidden /> Live Preview
+            </ButtonLink>
+          ) : onAction ? (
             <Button
               variant="secondary"
               onClick={onAction}
